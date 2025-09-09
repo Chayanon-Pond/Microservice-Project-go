@@ -8,15 +8,10 @@ import (
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"golang.org/x/crypto/bcrypt"
 )
 
-type User struct {
-	ID       int
-	Email    string
-	Password string
-	Role     string
-}
+// database.go keeps only DB connection helpers. Domain types and service
+// functions live in model.go and service.go respectively.
 
 func initDB() *sql.DB {
 	err := godotenv.Load("../.env")
@@ -41,24 +36,4 @@ func initDB() *sql.DB {
 	return db
 }
 
-func RegisterUser(db *sql.DB, email, password string) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-	_, err = db.Exec("INSERT INTO users (email, password) VALUES ($1, $2)", email, string(hashedPassword))
-	return err
-}
-
-func LoginUser(db *sql.DB, email, password string) (*User, error) {
-	var user User
-	err := db.QueryRow("SELECT id, email, password, role FROM users WHERE email=$1", email).Scan(&user.ID, &user.Email, &user.Password, &user.Role)
-	if err != nil {
-		return nil, err
-	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	if err != nil {
-		return nil, fmt.Errorf("invalid password")
-	}
-	return &user, nil
-}
+// (RegisterUser and LoginUser are defined in service.go)
