@@ -1,0 +1,26 @@
+# Go
+/bin/
+/build/
+*.exe
+*.log
+*.out
+*.test
+
+# Dependency directories
+vendor/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+
+# Database
+*.db
+*.sqlite
