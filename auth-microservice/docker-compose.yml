@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: ms-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: "${DB_USER:-postgres}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-postgres}"
+      POSTGRES_DB: "${DB_NAME:-Microservice}"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-Microservice}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
